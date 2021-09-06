@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Movies app</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="checkConnection">Check Your Connection</string>
+    <string name="internet_connection_failure">Internet Connection Failure</string>
+    <string name="empty_favourite">Empty Favourite</string>
+
+    <!-- Names of Bottom navigation -->
+    <string name="now_playing">Now Playing</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="favorite">Favorite</string>
+
+    <string name="genre_id">Genre Id: </string>
+    <string name="description">Description: </string>
+
+</resources>
