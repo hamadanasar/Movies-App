@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dailyforecastapp.Error.HandleError
 import com.example.moviesapp.MainActivity
 import com.example.moviesapp.R
-import com.example.moviesapp.ui.adapter.HomeAdapter
 import com.example.moviesapp.databinding.FragmentTopRatedBinding
+import com.example.moviesapp.handleData.HandleError
+import com.example.moviesapp.ui.adapter.HomeAdapter
 import com.example.moviesapp.ui.models.ItemDetails
 import com.example.moviesapp.ui.viewmodel.HomeViewModel
 
@@ -49,17 +49,20 @@ class TopRatedFragment : Fragment() {
 
         viewModel.getTopRated()
 
-        subscribeToLiveData()
-
         subscribeToHandleData()
 
         return viewRef.root
     }
 
     private fun subscribeToHandleData() {
-        viewModel.topRatedHandleError.observe(viewLifecycleOwner, {
+        viewModel.handleError.observe(viewLifecycleOwner, {
             it.let {
                 when (it.getStatus()) {
+                    HandleError.DataStatus.SUCCESS -> {
+                        (requireActivity() as MainActivity?)!!.hideProgressBar()
+                        viewRef.txtConnectionFailure.visibility = View.GONE
+                        initRecycler(it.getData())
+                    }
                     HandleError.DataStatus.ERROR -> {
                         (requireActivity() as MainActivity?)!!.hideProgressBar()
                         Toast.makeText(requireContext(), it.getError(), Toast.LENGTH_SHORT).show()
@@ -74,16 +77,6 @@ class TopRatedFragment : Fragment() {
                         ).show()
                     }
                 }
-            }
-        })
-    }
-
-    private fun subscribeToLiveData() {
-        viewModel.moviesLiveData.observe(viewLifecycleOwner, {
-            it.let {
-                (requireActivity() as MainActivity?)!!.hideProgressBar()
-                viewRef.txtConnectionFailure.visibility = View.GONE
-                initRecycler(it)
             }
         })
     }

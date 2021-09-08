@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.dailyforecastapp.Error.ErrorLiveData
 import com.example.moviesapp.BuildConfig
 import com.example.moviesapp.apis.ApiManager
+import com.example.moviesapp.handleData.ErrorLiveData
 import com.example.moviesapp.localdatabase.LocalDataBase
 import com.example.moviesapp.ui.models.ItemDetails
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -16,13 +16,9 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel() : ViewModel() {
 
-    var topRatedHandleError = ErrorLiveData<String>()
-    var nowPlayingHandleError = ErrorLiveData<String>()
+    var handleError = ErrorLiveData<ArrayList<ItemDetails>>()
 
     var selectedMovie = ItemDetails()
-
-    private val moviesData: MutableLiveData<ArrayList<ItemDetails>> = MutableLiveData()
-    val moviesLiveData: LiveData<ArrayList<ItemDetails>> = moviesData
 
     private val favMoviesData: MutableLiveData<ArrayList<ItemDetails>> = MutableLiveData()
     val favMoviesLiveData: LiveData<ArrayList<ItemDetails>> = favMoviesData
@@ -32,7 +28,7 @@ class HomeViewModel() : ViewModel() {
 
     fun getTopRated() {
         val handler = CoroutineExceptionHandler { _, exception ->
-            topRatedHandleError.postConnectionError(exception.localizedMessage)
+            handleError.postConnectionError(exception.localizedMessage)
         }
         CoroutineScope(Dispatchers.IO).launch(handler) {
             try {
@@ -41,17 +37,17 @@ class HomeViewModel() : ViewModel() {
                 if (response!!.isSuccessful) {
                     getAllFavourite(response.body()!!.TopRatedList!!)
                 } else {
-                    topRatedHandleError.postError("Something went wrong")
+                    handleError.postError("Something went wrong")
                 }
             } catch (e: Exception) {
-                topRatedHandleError.postConnectionError("Internet Connection Failure")
+                handleError.postConnectionError("Internet Connection Failure")
             }
         }
     }
 
     fun getNowPlaying() {
         val handler = CoroutineExceptionHandler { _, exception ->
-            nowPlayingHandleError.postConnectionError(exception.localizedMessage)
+            handleError.postConnectionError(exception.localizedMessage)
         }
         CoroutineScope(Dispatchers.IO).launch(handler) {
             try {
@@ -61,10 +57,10 @@ class HomeViewModel() : ViewModel() {
 
                     getAllFavourite(response.body()!!.nowPlayingList!!)
                 } else {
-                    nowPlayingHandleError.postConnectionError("Something went wrong")
+                    handleError.postConnectionError("Something went wrong")
                 }
             } catch (e: Exception) {
-                nowPlayingHandleError.postConnectionError("Internet Connection Failure")
+                handleError.postConnectionError("Internet Connection Failure")
             }
         }
     }
@@ -102,7 +98,8 @@ class HomeViewModel() : ViewModel() {
                 prod.isFavourite = true
             }
         }
-        moviesData.postValue(allMovies)
+
+        handleError.postSuccess(allMovies)
     }
 
 }

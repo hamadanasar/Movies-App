@@ -1,8 +1,10 @@
-package com.example.dailyforecastapp.Error
+package com.example.moviesapp.handleData
 
 class HandleError<T> {
 
     private var status: DataStatus? = null
+
+    private var data: T? = null
 
     private var connectionError: String? = null
     private var error: String? = null
@@ -10,7 +12,7 @@ class HandleError<T> {
     fun connectionError(error: String): HandleError<T> {
         status = DataStatus.CONNECTIONERROR
         this.connectionError = error
-
+        this.error = null
         return this
     }
 
@@ -18,6 +20,14 @@ class HandleError<T> {
         status = DataStatus.ERROR
         this.error = error
         this.connectionError = null
+        return this
+    }
+
+    fun success(data: T?): HandleError<T> {
+        status = DataStatus.SUCCESS
+        this.data = data
+        this.connectionError = null
+        this.error = null
         return this
     }
 
@@ -33,7 +43,11 @@ class HandleError<T> {
         return connectionError
     }
 
+    fun getData(): T? {
+        return data
+    }
+
     enum class DataStatus {
-        CONNECTIONERROR, ERROR
+        SUCCESS, CONNECTIONERROR, ERROR
     }
 }
